@@ -33,6 +33,7 @@
     "chai-http": "4.3.0",
     "mocha": "6.2.0",
     "mochawesome": "^4.1.0",
-    "nodemon": "^1.19.1"
+    "nodemon": "^1.19.1",
+    "mocha-junit-reporter"
   }
 }
