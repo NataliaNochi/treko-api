@@ -20,7 +20,7 @@ describe('post', () => {
                 .auth('guest', 'guest')
                 .end((err, res) => {
                     expect(res).to.has.status(204);
-                    done();''
+                    done();
                 })
         })
 
