@@ -10,79 +10,77 @@ const expect = chai.expect;
 
 describe('get', () => {
 
-    context('quando eu tenho tarefas cadastradas', () => {
+    before((done) => {
+        tasksModel.deleteMany({});
+        done()
+    })
 
-        before((done) => {
+    context('Verificar tarefas', () => {
+
+        before('Inserir tarefas', (done) => {
             let tasks = [
-                { title: 'Estudar NodejS', owner: 'eu@papito.io', done: false },
-                { title: 'Fazer compras', owner: 'eu@papito.io', done: false },
-                { title: 'Estudar MongoDB', owner: 'eu@papito.io', done: true }
+                { title: 'Estudar NodeJs', owner: 'eu@test.com', done: false },
+                { title: 'Fazer compras', owner: 'vc@test.com', done: false },
+                { title: 'Estudar MongoDB', owner: 'eles@test.com', done: true },
             ]
 
-            tasksModel.insertMany(tasks, (error, docs) => {
-                expect(error).to.be.null
-            });
-            done();
+            tasksModel.insertMany(tasks);
+            done()
         })
 
-        it('deve retornar uma lista', (done) => {
+        it('Deve retornar uma lista', (done) => {
             request
                 .get('/task')
                 .end((err, res) => {
-                    expect(res).to.has.status(200);
+                    expect(res.status).to.eql(200);
                     expect(res.body.data).to.be.an('array');
                     done();
                 })
         })
 
-        it('deve filtrar por palavra chave', (done) => {
+        it('Deve filtrar por palavra chave', (done) => {
             request
                 .get('/task')
                 .query({ title: 'Estudar' })
                 .end((err, res) => {
-                    expect(res).to.has.status(200);
-                    expect(res.body.data[0].title).to.equal('Estudar NodejS')
+                    expect(res.status).to.eql(200);
+                    expect(res.body.data[0].title).to.equal('Estudar NodeJs')
                     expect(res.body.data[1].title).to.equal('Estudar MongoDB')
                     done();
                 })
         })
     })
 
-    context('quando busco por id', ()=> {
-
-        it('deve retornar uma única tarefa', (done) => {
+    context('Quando busco por id', () => {
+        it('Deve retornar uma unica tarefa', (done) => {
             let tasks = [
-                { title: 'Ler um livro de Javascript', owner: 'eu@papito.io', done: false },
+                { title: 'Ler um livro de javascript', owner: 'eu@teste.com', done: false },
             ]
 
             tasksModel.insertMany(tasks, (err, result) => {
-                let id = result[0]._id
+                let id = result[0]._id  //após inserir o objeto tasks, retorna o atributo _id que foi inserido
+               
                 request
                     .get('/task/' + id)
                     .end((err, res) => {
-                        expect(res).to.has.status(200);
+                        expect(res.status).to.eql(200);
                         expect(res.body.data.title).to.equal(tasks[0].title);
                         done();
                     })
             });
-            
         })
     })
 
-    context('quando a tarefa nao existe', ()=> {
-
-        it('deve retornar 404', (done) => {
+    context('Quando tarefa não existe', () => {
+        it('Deve retornar 404', (done) => {
             let id = require('mongoose').Types.ObjectId();
             request
-            .get('/task/' + id)
-            .end((err, res) => {
-                expect(res).to.has.status(404);
-                expect(res.body).to.eql({});
-                done();
-            })
-            
+                .get('/task/' + id)
+                .end((err, res) => {
+                    expect(res.status).to.eql(404);
+                    expect(res.body).to.eql({});
+                    done();
+                })
         })
     })
-
-
 })
